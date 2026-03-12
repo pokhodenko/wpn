@@ -1,0 +1,31 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN, cannot be changed between the plugin versions. -->
+    <id>com.pokhodenko.wpn</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Workspace Package Navigator</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://github.com/pokhodenko">Dmytro Pokhodenko</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        Workspace Package Navigator improves the <b>Go-to Declaration</b> action for projects that use <b>npm workspaces</b> and linked packages inside <b>node_modules</b>.<br><br>
+        When a dependency in <b>node_modules</b> is actually a symlink to a local workspace package, the plugin helps navigation lead you to the real source code instead of an intermediate location.<br><br>
+        This is especially useful in monorepos and modular JavaScript or TypeScript projects, where standard <b>Go to Declaration</b> behavior may jump through dependency paths rather than opening the actual workspace package implementation. Workspace Package Navigator makes that navigation more natural, direct, and predictable.
+        ]]>
+    </description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extensions defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <gotoDeclarationHandler implementation="com.pokhodenko.wpn.SymlinksGotoDeclarationHandler"/>
+    </extensions>
+</idea-plugin>

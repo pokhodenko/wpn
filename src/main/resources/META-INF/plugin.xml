@@ -26,6 +26,13 @@
     <!-- Extensions defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.pokhodenko.wpn.WpnSettings"/>
+        <applicationConfigurable instance="com.pokhodenko.wpn.WpnSettingsConfigurable"
+                                 id="com.pokhodenko.wpn.settings"
+                                 parentId="tools"
+                                 displayName="Workspace Package Navigator"/>
         <gotoDeclarationHandler implementation="com.pokhodenko.wpn.SymlinksGotoDeclarationHandler"/>
+        <notificationGroup id="com.pokhodenko.wpn" displayType="STICKY_BALLOON" isLogByDefault="true"/>
+        <postStartupActivity implementation="com.pokhodenko.wpn.WpnStartupActivity"/>
     </extensions>
 </idea-plugin>

@@ -4,15 +4,14 @@ import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.roots.ProjectFileIndex
+
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import org.jetbrains.annotations.Nls
-import java.io.IOException
-import java.nio.file.Path
 import java.util.LinkedHashSet
 
 class SymlinksGotoDeclarationHandler : GotoDeclarationHandler {
@@ -88,23 +87,16 @@ class SymlinksGotoDeclarationHandler : GotoDeclarationHandler {
             return target
         }
 
-        val originalPath: Path
-        val realPath: Path
-        try {
-            originalPath = Path.of(originalVirtualFile.path)
-            realPath = originalPath.toRealPath()
-        } catch (_: IOException) {
-            return target
-        } catch (_: RuntimeException) {
-            return target
+        if (WpnSettings.getInstance().ignoreFilesOutsideLibraryRoot) {
+            val fileIndex = ProjectFileIndex.getInstance(project)
+            if (!fileIndex.isInLibrary(originalVirtualFile)) {
+                return target
+            }
         }
 
-        if (originalPath == realPath) {
-            return target
-        }
-
-        val realVirtualFile = LocalFileSystem.getInstance().findFileByNioFile(realPath)
-        if (realVirtualFile == null || realVirtualFile == originalVirtualFile) {
+        // VFS already resolved the canonical path during indexing — no fresh IO needed
+        val realVirtualFile = originalVirtualFile.canonicalFile ?: return target
+        if (realVirtualFile == originalVirtualFile) {
             return target
         }
 

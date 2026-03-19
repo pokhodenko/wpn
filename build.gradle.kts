@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.wpn"
-version = "1.1"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
@@ -33,7 +33,11 @@ intellijPlatform {
         }
 
         changeNotes = """
-            Initial version
+            <ul>
+                <li><b>Settings panel</b> — added <i>Settings → Tools → Workspace Package Navigator</i> with an option to restrict symlink remapping to library roots only (<i>Ignore files outside library root</i>)</li>
+                <li><b>First-run notification</b> — on initial install the plugin now prompts to invalidate caches and restart the IDE, ensuring the VFS index reflects symlink targets correctly</li>
+                <li><b>Performance: VFS-based symlink resolution</b> — symlink targets are now resolved using IntelliJ's VFS cache (<code>canonicalFile</code>) instead of blocking filesystem I/O (<code>Path.toRealPath()</code>).</li>
+            </ul>
         """.trimIndent()
     }
 }

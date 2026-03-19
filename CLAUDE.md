@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Plugin ID:** `com.pokhodenko.wpn`
 - **Target IDE:** PhpStorm (2025.2.4+), compatible with other JetBrains IDEs
-- **Version:** 1.1
+- **Version:** 1.1.1
 
 ## Build & Run Commands
 
@@ -31,7 +31,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-The plugin consists of a single Kotlin class:
+The plugin consists of the following Kotlin classes:
 
 **`SymlinksGotoDeclarationHandler`** (`src/main/kotlin/com/pokhodenko/wpn/SymlinksGotoDeclarationHandler.kt`)
 - Implements IntelliJ's `GotoDeclarationHandler` extension point
@@ -40,8 +40,20 @@ The plugin consists of a single Kotlin class:
 **Navigation flow:**
 1. `getGotoDeclarationTargets()` — intercepts Go-to-Declaration, resolves references, remaps symlinked targets
 2. `resolveTargets()` — handles both single and poly-variant PSI references
-3. `remapToRealFile()` — resolves symlinks via `Path.toRealPath()`, finds the real `VirtualFile`, and maps the PSI element to it
+3. `remapToRealFile()` — resolves symlinks via `VirtualFile.canonicalFile` (VFS-cached, handles symlinked parent directories such as `node_modules/package-name`), finds the real PSI file, and maps the element to it
 4. `climbToReasonableTarget()` — climbs the PSI tree in the real file to find an element with a matching type and range
+
+**`WpnSettings`** (`src/main/kotlin/com/pokhodenko/wpn/WpnSettings.kt`)
+- App-level persistent state component storing plugin settings
+- `ignoreFilesOutsideLibraryRoot` — when enabled, restricts symlink remapping to files under library roots (`node_modules` qualifies as a library classes root automatically)
+- `firstRunNotificationShown` — tracks whether the initial install notification has been shown
+
+**`WpnSettingsConfigurable`** (`src/main/kotlin/com/pokhodenko/wpn/WpnSettingsConfigurable.kt`)
+- Registers the settings UI under *Settings → Tools → Workspace Package Navigator*
+
+**`WpnStartupActivity`** (`src/main/kotlin/com/pokhodenko/wpn/WpnStartupActivity.kt`)
+- Runs once on first project open after install
+- Shows a sticky notification prompting the user to invalidate caches and restart the IDE
 
 ## Tech Stack
 
